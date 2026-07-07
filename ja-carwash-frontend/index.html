@@ -757,12 +757,18 @@
             const vehiculoTexto = servicioSelect.options[servicioSelect.selectedIndex].getAttribute('data-nombre');
             
             const fechaString = document.getElementById('fechaInput').value;
-            const partesFecha = fechaString.split('/');
-            const fechaFormateada = `${partesFecha[2]}-${partesFecha[1]}-${partesFecha[0]}`;
-            const hora = document.getElementById('hora').value;
-            
-           // 1. Tomamos tu fecha ya formateada (YYYY-MM-DD) y la hora (HH:mm)
-const fechaHoraInicio = `${fechaFormateada}T${hora}:00-03:00`;
+const partesFecha = fechaString.split('/');
+const fechaFormateada = `${partesFecha[2]}-${partesFecha[1]}-${partesFecha[0]}`;
+
+// 1. Obtenemos lo que sea que devuelva el select (puede ser "10:00" o "10:00:00")
+const horaInput = document.getElementById('hora').value;
+
+// 2. Separamos por ":" y nos quedamos SOLO con la Hora y el Minuto. 
+// Luego le clavamos un único ":00" para los segundos.
+const horaLimpia = horaInput.split(':').slice(0, 2).join(':') + ':00';
+
+// 3. Juntamos todo con el formato que Java OffsetDateTime ama (-03:00)
+const fechaHoraInicio = `${fechaFormateada}T${horaLimpia}-03:00`;
 
 // 2. ENVIAMOS ESTO. Al quitar el "-03:00", Java lo tomará como 
 // una fecha local (LocalDateTime) que es mucho más fácil de procesar.
