@@ -64,14 +64,23 @@ public class TurnoService {
         return turnoGuardado;
     }
 
-  private void enviarNotificacionWhatsApp(Cliente cliente, Turno turno) {
+private void enviarNotificacionWhatsApp(Cliente cliente, Turno turno) {
         try {
             // 1. TUS DATOS DE GREEN API
-            String idInstance = "710701675602"; 
+            String idInstance = "710701675602";
             String apiToken = "fa42331818d14db78485cb1f2e71ecd0fa22d65526b240efbb"; 
             
-            // 2. EL NÚMERO DE DESTINO (Tu celular con código de país, pero SIN el signo + ni espacios. Ej para Argentina: 5493510000000)
-            String telefonoDestino = "5493516807575"; 
+            // 2. EL NÚMERO DE DESTINO
+            String telefonoDestino = "5493516807575";
+
+            // 🌟 FORMATEADOR DE FECHA Y HORA SEGURO PARA ARGENTINA 🇦🇷
+            // Esto convertirá la fecha a formato local de Argentina automáticamente.
+            java.time.ZoneId zonaArgentina = java.time.ZoneId.of("America/Argentina/Buenos_Aires");
+            java.time.ZonedDateTime fechaLocal = turno.getFechaHoraInicio().atZoneSameInstant(zonaArgentina);
+            
+            // Creamos un formato lindo, por ejemplo: "10-07-2026 a las 15:00"
+            java.time.format.DateTimeFormatter formateador = java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy 'a las' HH:mm");
+            String fechaHoraFormateada = fechaLocal.format(formateador);
 
             // 3. ARMAMOS EL MENSAJE
             String textoMensaje = String.format(
@@ -80,21 +89,21 @@ public class TurnoService {
                 "📱 *WhatsApp:* %s\n" +
                 "🚘 *Vehículo:* %s\n" +
                 "🧼 *Servicio:* %s ($%s)\n" +
-                "📅 *Horario:* %s-3:00 hs\n\n" +
+                "📅 *Horario:* %s hs\n\n" +
                 "👉 Revisa el panel administrativo para gestionar la agenda.",
                 cliente.getNombre(),
                 cliente.getTelefono(),
                 cliente.getVehiculoInfo(),
                 turno.getServicio().getNombre(),
                 turno.getServicio().getPrecio(),
-                turno.getFechaHoraInicio().toString().replace("T", " a las ").substring(0, 21)
+                fechaHoraFormateada // 👈 Insertamos el texto ya corregido y formateado de forma segura
             );
 
-            // 4. PREPARAMOS EL JSON QUE PIDE GREEN API (Lleva el teléfono con "@c.us" al final)
+            // 4. PREPARAMOS EL JSON QUE PIDE GREEN API
             String jsonPayload = String.format(
                 "{\"chatId\": \"%s@c.us\", \"message\": \"%s\"}",
                 telefonoDestino, 
-                textoMensaje.replace("\n", "\\n").replace("\"", "\\\"") // Limpiamos saltos de línea y comillas para el JSON
+                textoMensaje.replace("\n", "\\n").replace("\"", "\\\"") 
             );
 
             // 5. CONSTRUIMOS LA URL DE ENVÍO OFICIAL
