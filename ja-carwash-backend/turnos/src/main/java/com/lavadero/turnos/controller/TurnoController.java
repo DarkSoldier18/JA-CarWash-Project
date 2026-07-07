@@ -41,17 +41,32 @@ public class TurnoController {
 
     // Ruta 2: Recibir una nueva reserva
     // URL: POST http://localhost:8080/api/turnos
-    @PostMapping("/turnos")
-    public ResponseEntity<?> reservarTurno(@RequestBody TurnoRequest request) {
-        try {
-            Turno nuevoTurno = turnoService.crearTurno(request);
-            return ResponseEntity.status(HttpStatus.CREATED).body(nuevoTurno);
-        } catch (Exception e) {
+   // @PostMapping("/turnos")
+    //public ResponseEntity<?> reservarTurno(@RequestBody TurnoRequest request) {
+      //  try {
+        //    Turno nuevoTurno = turnoService.crearTurno(request);
+          //  return ResponseEntity.status(HttpStatus.CREATED).body(nuevoTurno);
+        //} catch (Exception e) {
             // Si el horario ya está ocupado (gracias a nuestra regla SQL), devolverá un error 400
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Error al reservar el turno: Es posible que el horario ya esté ocupado o los datos sean incorrectos.");
-        }
+          //  return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            //        .body("Error al reservar el turno: Es posible que el horario ya esté ocupado o los datos sean incorrectos.");
+        //}
+    //}
+
+    @PostMapping("/turnos")
+public ResponseEntity<?> reservarTurno(@RequestBody TurnoRequest request) {
+    try {
+        Turno nuevoTurno = turnoService.crearTurno(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoTurno);
+    } catch (Exception e) {
+        // 1. Esto imprime el error exacto con su línea en la consola de Render
+        e.printStackTrace(); 
+        
+        // 2. Esto te devuelve el mensaje de error real a la web en lugar de la frase genérica
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("❌ Error real en el servidor: " + e.getMessage());
     }
+}
 
     // Ruta 3: Consultar los turnos ocupados de una fecha
     // URL: GET http://localhost:8080/api/turnos/fecha/2026-07-10
