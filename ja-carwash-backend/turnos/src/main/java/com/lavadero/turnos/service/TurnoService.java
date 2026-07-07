@@ -127,8 +127,8 @@ public class TurnoService {
     // Método para buscar todos los turnos ocupados en una fecha específica
     public List<Turno> listarTurnosPorFecha(String fecha) {
         // Recibimos la fecha como "2026-07-10" y armamos el rango desde las 00:00 hasta las 23:59
-        OffsetDateTime inicioDia = OffsetDateTime.parse(fecha + "T00:00:00");
-        OffsetDateTime finDia = OffsetDateTime.parse(fecha + "T23:59:59");
+        OffsetDateTime inicioDia = OffsetDateTime.parse(fecha + "T00:00:00-03:00");
+        OffsetDateTime finDia = OffsetDateTime.parse(fecha + "T23:59:59-03:00");
         
         // Usamos el repositorio para buscar en PostgreSQL los confirmados de ese día
         return turnoRepository.findByFechaHoraInicioBetweenAndEstado(inicioDia, finDia, "CONFIRMADO");
