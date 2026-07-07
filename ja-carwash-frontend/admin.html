@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - JA CarWash</title>
+    <style>
+        :root {
+            --bg-dark: #121212;
+            --bg-card: #1e1e1e;
+            --text-main: #ffffff;
+            --accent-gold: #ffb703;
+            --success: #2ec4b6;
+            --danger: #e71d36;
+            --gray: #6c757d;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Login */
+        .login-container {
+            max-width: 400px; margin: 100px auto; background-color: var(--bg-card);
+            padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            text-align: center; border: 1px solid #333;
+        }
+        .login-container input {
+            width: 100%; padding: 12px; margin: 15px 0; border-radius: 5px;
+            border: 1px solid #444; background-color: #121212; color: white; box-sizing: border-box; font-size: 1rem;
+        }
+        .login-btn {
+            width: 100%; padding: 12px; background-color: var(--accent-gold); color: black;
+            border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 1rem;
+        }
+        .login-btn:hover { background-color: #e5a100; }
+        .dashboard-content { display: none; }
+
+        /* Header */
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 20px;
+        }
+        h1 { margin: 0; color: var(--accent-gold); }
+        
+        .btn-refresh {
+            background-color: #333; color: white; border: 1px solid var(--accent-gold);
+            padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.2s;
+        }
+        .btn-refresh:hover { background-color: var(--accent-gold); color: black; }
+
+        /* BARRA DE CONTROL Y MODOS DE VISTA */
+        .date-filter-bar {
+            background-color: #252525; padding: 15px 20px; border-radius: 8px;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 25px; border: 1px solid #3d3d3d; flex-wrap: wrap; gap: 15px;
+        }
+        
+        /* Botones para alternar entre Día Único y Cascada */
+        .view-toggle {
+            display: flex; background-color: #121212; padding: 4px; border-radius: 6px; border: 1px solid #444;
+        }
+        .view-toggle button {
+            background: none; color: #aaa; border: none; padding: 8px 16px; border-radius: 4px;
+            cursor: pointer; font-weight: bold; font-size: 0.9rem; transition: 0.2s;
+        }
+        .view-toggle button.active-mode {
+            background-color: var(--accent-gold); color: #000;
+        }
+
+        .date-buttons button {
+            background-color: #333; color: white; border: 1px solid #555;
+            padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.2s;
+        }
+        .date-buttons button:hover { background-color: #444; border-color: var(--accent-gold); }
+        .date-buttons button.active-today { background-color: var(--accent-gold); color: black; border-color: var(--accent-gold); }
+        
+        .date-picker-wrapper input[type="date"] {
+            padding: 8px 15px; border-radius: 5px; border: 1px solid var(--accent-gold);
+            background-color: #121212; color: white; font-size: 1rem; font-weight: bold; cursor: pointer;
+        }
+
+        /* DISEÑO DE TABLAS Y CASCADA SEMANAL */
+        .table-container {
+            background-color: var(--bg-card); border-radius: 8px; overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5); margin-bottom: 30px;
+            border: 1px solid #2f2f2f;
+        }
+        
+        /* Resaltado especial para la tarjeta de HOY en la cascada */
+        .card-hoy {
+            border: 2px solid var(--accent-gold) !important;
+            box-shadow: 0 0 20px rgba(255, 183, 3, 0.15) !important;
+        }
+
+        .dia-header {
+            background-color: #181818; padding: 12px 20px; font-size: 1.1rem; font-weight: bold;
+            color: var(--accent-gold); border-bottom: 2px solid #333; display: flex; justify-content: space-between; align-items: center;
+        }
+        .dia-header.es-hoy { background-color: rgba(255, 183, 3, 0.15); color: #fff; }
+
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background-color: #1a1a1a; padding: 14px 16px; color: #aaa; font-size: 0.8rem; text-transform: uppercase; border-bottom: 2px solid #333; }
+        td { padding: 16px; border-bottom: 1px solid #2f2f2f; vertical-align: middle; }
+
+        /* ⭐ PINTADO DE FILAS POR ESTADO ⭐ */
+        .fila-CONFIRMADO { background-color: rgba(46, 196, 182, 0.18) !important; border-left: 6px solid var(--success); }
+        .fila-CONFIRMADO:hover { background-color: rgba(46, 196, 182, 0.28) !important; }
+
+        .fila-COMPLETADO { background-color: rgba(108, 117, 125, 0.22) !important; border-left: 6px solid var(--gray); color: #b0b0b0; }
+        .fila-COMPLETADO:hover { background-color: rgba(108, 117, 125, 0.32) !important; }
+
+        .fila-CANCELADO { background-color: rgba(231, 29, 54, 0.22) !important; border-left: 6px solid var(--danger); color: #f8a5a5; }
+        .fila-CANCELADO:hover { background-color: rgba(231, 29, 54, 0.32) !important; }
+        .fila-CANCELADO td { text-decoration: line-through; opacity: 0.75; }
+        
+        .badge { padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; display: inline-block;}
+        .badge-CONFIRMADO { background-color: var(--success); color: #000; }
+        .badge-COMPLETADO { background-color: var(--gray); color: #fff; }
+        .badge-CANCELADO { background-color: var(--danger); color: #fff; }
+
+        .action-btn { padding: 8px 14px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-right: 6px; transition: 0.2s;}
+        .btn-complete { background-color: var(--success); color: #000; }
+        .btn-complete:hover { background-color: #259d91; transform: scale(1.05); }
+        .btn-cancel { background-color: var(--danger); color: #fff; }
+        .btn-cancel:hover { background-color: #b8152a; transform: scale(1.05); }
+        
+        .btn-wa { background-color: #25D366; color: #000; text-decoration: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; display: inline-block;}
+        .btn-wa:hover { background-color: #1ebd5b; }
+        
+        .empty-state { text-align: center; padding: 30px; color: var(--gray); font-size: 0.95rem; }
+    </style>
+</head>
+<body>
+
+    <!-- VISTA 1: LOGIN -->
+    <div id="loginBox" class="login-container">
+        <h2 style="color: var(--accent-gold); margin-top: 0;">🔒 Acceso Restringido</h2>
+        <p style="color: #aaa; font-size: 0.9rem;">Ingresá la clave maestra de JA CarWash.</p>
+        <form id="loginForm">
+            <input type="password" id="adminPassword" placeholder="Contraseña..." required>
+            <button type="submit" class="login-btn">Ingresar al Panel</button>
+        </form>
+        <p id="loginError" style="color: var(--danger); margin-top: 15px; font-weight: bold; display: none;">⚠️ Clave incorrecta</p>
+        <a href="http://127.0.0.1:5500/index.html" style="color: var(--gray); display: inline-block; margin-top: 15px; text-decoration: none; font-size: 0.9rem;">🏠 Volver a la Web</a>
+    </div>
+
+    <!-- VISTA 2: DASHBOARD -->
+    <div id="dashboardBox" class="dashboard-content">
+        <div class="header">
+            <div>
+                <h1>📋 JA CarWash - Agenda Dinámica</h1>
+                <p style="margin: 5px 0 0 0; color: #aaa;">Control inteligente de turnos con gestión visual en cascada.</p>
+            </div>
+            <div>
+                <a href="http://127.0.0.1:5500/index.html" style="background-color: #2a2a2a; color: white; text-decoration: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; margin-right: 10px; border: 1px solid #555;">🏠 Ver Web</a>
+                <button class="btn-refresh" onclick="descargarTurnosDelServidor()">🔄 Actualizar Datos</button>
+                <button style="background-color: #e71d36; color: white; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; margin-left: 10px;" onclick="cerrarSesion()">🚪 Salir</button>
+            </div>
+        </div>
+
+        <!-- BARRA DE CONTROL DE VISTAS Y FECHAS -->
+        <div class="date-filter-bar">
+            <!-- Toggle Modo de Vista -->
+            <div class="view-toggle">
+                <button id="btnModoDia" class="active-mode" onclick="cambiarModoVista('dia')">📅 Día Único</button>
+                <button id="btnModoSemana" onclick="cambiarModoVista('semana')">🗓️ Semana en Cascada (-3 a +3 días)</button>
+            </div>
+
+            <div class="date-buttons" id="controlesDia">
+                <button onclick="cambiarDia(-1)">◀ Ayer</button>
+                <button onclick="seleccionarHoy()" id="btnHoy" class="active-today">📍 HOY</button>
+                <button onclick="cambiarDia(1)">Mañana ▶</button>
+            </div>
+
+            <div class="date-picker-wrapper">
+                <span style="color: #aaa; margin-right: 10px; font-size: 0.9rem;">Fecha base:</span>
+                <input type="date" id="selectorFecha" onchange="alCambiarFechaManual()">
+            </div>
+        </div>
+
+        <!-- CONTENEDOR DINÁMICO DONDE SE DIBUJAN LAS TABLAS -->
+        <div id="contenedorPrincipalTablas">
+            <div class="table-container"><div class="empty-state">⏳ Cargando turnos...</div></div>
+        </div>
+    </div>
+
+    <script>
+        let listaGlobalTurnos = [];
+        let fechaSeleccionadaStr = ""; 
+        let modoVistaActual = "dia"; // Puede ser "dia" o "semana"
+
+        document.addEventListener("DOMContentLoaded", () => {
+            seleccionarHoy(); 
+            if (sessionStorage.getItem("adminKey")) {
+                mostrarDashboard();
+            }
+        });
+
+        function obtenerFechaLocalISO(fecha) {
+            const year = fecha.getFullYear();
+            const month = String(fecha.getMonth() + 1).padStart(2, '0');
+            const day = String(fecha.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // --- CONTROL DE MODOS DE VISTA ---
+        function cambiarModoVista(modo) {
+            modoVistaActual = modo;
+            
+            // Actualizamos botones activos
+            document.getElementById("btnModoDia").classList.toggle("active-mode", modo === "dia");
+            document.getElementById("btnModoSemana").classList.toggle("active-mode", modo === "semana");
+            
+            renderizarVista();
+        }
+
+        function seleccionarHoy() {
+            const hoy = new Date();
+            fechaSeleccionadaStr = obtenerFechaLocalISO(hoy);
+            document.getElementById("selectorFecha").value = fechaSeleccionadaStr;
+            verificarSiEsHoy();
+            renderizarVista();
+        }
+
+        function cambiarDia(dias) {
+            const partes = fechaSeleccionadaStr.split('-');
+            const fechaActual = new Date(partes[0], partes[1] - 1, partes[2]);
+            fechaActual.setDate(fechaActual.getDate() + dias);
+            
+            fechaSeleccionadaStr = obtenerFechaLocalISO(fechaActual);
+            document.getElementById("selectorFecha").value = fechaSeleccionadaStr;
+            
+            verificarSiEsHoy();
+            renderizarVista();
+        }
+
+        function alCambiarFechaManual() {
+            fechaSeleccionadaStr = document.getElementById("selectorFecha").value;
+            verificarSiEsHoy();
+            renderizarVista();
+        }
+
+        function verificarSiEsHoy() {
+            const hoyStr = obtenerFechaLocalISO(new Date());
+            const btnHoy = document.getElementById("btnHoy");
+            if (fechaSeleccionadaStr === hoyStr) {
+                btnHoy.classList.add("active-today");
+            } else {
+                btnHoy.classList.remove("active-today");
+            }
+        }
+
+        // --- LOGIN Y DESCARGA ---
+        document.getElementById("loginForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            sessionStorage.setItem("adminKey", document.getElementById("adminPassword").value);
+            descargarTurnosDelServidor(true);
+        });
+
+        function mostrarDashboard() {
+            document.getElementById("loginBox").style.display = "none";
+            document.getElementById("dashboardBox").style.display = "block";
+            descargarTurnosDelServidor();
+        }
+
+        function cerrarSesion() {
+            sessionStorage.removeItem("adminKey");
+            window.location.reload();
+        }
+
+        async function descargarTurnosDelServidor(isLoginAttempt = false) {
+            const claveActual = sessionStorage.getItem("adminKey");
+            if (!isLoginAttempt) {
+                document.getElementById("contenedorPrincipalTablas").innerHTML = '<div class="table-container"><div class="empty-state">⏳ Sincronizando con Java...</div></div>';
+            }
+
+            try {
+                const respuesta = await fetch("http://localhost:8080/api/turnos", {
+                    headers: { "X-Admin-Key": claveActual }
+                });
+
+                if (respuesta.ok) {
+                    listaGlobalTurnos = await respuesta.json();
+                    if (isLoginAttempt) {
+                        mostrarDashboard();
+                    } else {
+                        renderizarVista();
+                    }
+                } else {
+                    sessionStorage.removeItem("adminKey");
+                    if (isLoginAttempt) document.getElementById("loginError").style.display = "block";
+                    else window.location.reload();
+                }
+            } catch (error) {
+                if (!isLoginAttempt) {
+                    document.getElementById("contenedorPrincipalTablas").innerHTML = '<div class="table-container"><div class="empty-state" style="color: var(--danger);">⚠️ Error de conexión con el servidor Java.</div></div>';
+                }
+            }
+        }
+
+        // --- DISTRIBUIDOR DE RENDERIZADO ---
+        function renderizarVista() {
+            if (modoVistaActual === "dia") {
+                renderizarVistaDiaUnico();
+            } else {
+                renderizarVistaSemanaCascada();
+            }
+        }
+
+        // --- ALGORITMO DE ORDENAMIENTO (Compartido por ambas vistas) ---
+        function ordenarTurnos(turnos) {
+            const pesosEstado = { "CONFIRMADO": 1, "COMPLETADO": 2, "CANCELADO": 3 };
+            return turnos.sort((a, b) => {
+                const pesoA = pesosEstado[a.estado] || 4;
+                const pesoB = pesosEstado[b.estado] || 4;
+                if (pesoA !== pesoB) return pesoA - pesoB;
+                return new Date(a.fechaHoraInicio) - new Date(b.fechaHoraInicio);
+            });
+        }
+
+        // --- VISTA 1: DÍA ÚNICO ---
+        function renderizarVistaDiaUnico() {
+            const contenedor = document.getElementById("contenedorPrincipalTablas");
+            const turnosDelDia = listaGlobalTurnos.filter(t => t.fechaHoraInicio.startsWith(fechaSeleccionadaStr));
+            
+            const partes = fechaSeleccionadaStr.split('-');
+            const fechaBonita = `${partes[2]}/${partes[1]}/${partes[0]}`;
+
+            let htmlTabla = `
+                <div class="table-container">
+                    <div class="dia-header ${fechaSeleccionadaStr === obtenerFechaLocalISO(new Date()) ? 'es-hoy' : ''}">
+                        <span>📅 Agenda del Día: ${fechaBonita}</span>
+                        <span>Total Citas: ${turnosDelDia.length}</span>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#ID</th><th>Horario</th><th>Cliente</th><th>WhatsApp</th><th>Vehículo / Servicio</th><th>Estado</th><th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            if (turnosDelDia.length === 0) {
+                htmlTabla += `<tr><td colspan="7" class="empty-state">🏖️ No hay turnos registrados para este día.</td></tr>`;
+            } else {
+                htmlTabla += generarFilasHTML(ordenarTurnos(turnosDelDia));
+            }
+
+            htmlTabla += `</tbody></table></div>`;
+            contenedor.innerHTML = htmlTabla;
+        }
+
+        // --- VISTA 2: SEMANA EN CASCADA (-3 DÍAS A +3 DÍAS) ---
+        function renderizarVistaSemanaCascada() {
+            const contenedor = document.getElementById("contenedorPrincipalTablas");
+            contenedor.innerHTML = ""; // Limpiamos el contenedor
+
+            const partes = fechaSeleccionadaStr.split('-');
+            const fechaBase = new Date(partes[0], partes[1] - 1, partes[2]);
+            const hoyStr = obtenerFechaLocalISO(new Date());
+
+            // Bucle para generar los 7 días (-3, -2, -1, 0, +1, +2, +3)
+            for (let offset = -3; offset <= 3; offset++) {
+                const fechaIterada = new Date(fechaBase);
+                fechaIterada.setDate(fechaBase.getDate() + offset);
+                
+                const fechaStr = obtenerFechaLocalISO(fechaIterada);
+                const esHoy = (fechaStr === hoyStr);
+                
+                // Formateamos el nombre del día en español (Ej: "Martes 07/07/2026")
+                const nombreDia = fechaIterada.toLocaleDateString('es-AR', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
+                const nombreDiaCapitalizado = nombreDia.charAt(0).toUpperCase() + nombreDia.slice(1);
+
+                // Filtrar turnos para este día en particular
+                const turnosDelDia = listaGlobalTurnos.filter(t => t.fechaHoraInicio.startsWith(fechaStr));
+
+                // Construimos la tarjeta del día
+                const divContenedor = document.createElement("div");
+                divContenedor.className = `table-container ${esHoy ? 'card-hoy' : ''}`;
+
+                let htmlTarjeta = `
+                    <div class="dia-header ${esHoy ? 'es-hoy' : ''}">
+                        <span>${esHoy ? '📍 ¡HOY! - ' : '🗓️ '}${nombreDiaCapitalizado}</span>
+                        <span style="font-size: 0.9rem; background: rgba(0,0,0,0.3); padding: 4px 10px; border-radius: 12px;">
+                            ${turnosDelDia.length} ${turnosDelDia.length === 1 ? 'turno' : 'turnos'}
+                        </span>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#ID</th><th>Horario</th><th>Cliente</th><th>WhatsApp</th><th>Vehículo / Servicio</th><th>Estado</th><th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                if (turnosDelDia.length === 0) {
+                    htmlTarjeta += `<tr><td colspan="7" class="empty-state" style="padding: 20px; font-size: 0.85rem; opacity: 0.6;">Sin reservas para esta fecha.</td></tr>`;
+                } else {
+                    htmlTarjeta += generarFilasHTML(ordenarTurnos(turnosDelDia));
+                }
+
+                htmlTarjeta += `</tbody></table>`;
+                divContenedor.innerHTML = htmlTarjeta;
+                contenedor.appendChild(divContenedor);
+            }
+        }
+
+        // --- GENERADOR DE FILAS HTML (Evita repetir código) ---
+        function generarFilasHTML(turnos) {
+            let filas = "";
+            turnos.forEach(turno => {
+                const fechaObj = new Date(turno.fechaHoraInicio);
+                const horaTxt = fechaObj.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+
+                let botonesAccion = "-";
+                if (turno.estado === "CONFIRMADO") {
+                    botonesAccion = `
+                        <button class="action-btn btn-complete" onclick="cambiarEstado(${turno.id}, 'COMPLETADO')">✔ Listo</button>
+                        <button class="action-btn btn-cancel" onclick="cambiarEstado(${turno.id}, 'CANCELADO')">✖ Cancelar</button>
+                    `;
+                }
+
+                filas += `
+                    <tr class="fila-${turno.estado}">
+                        <td><b>#${turno.id}</b></td>
+                        <td><b style="font-size: 1.15rem; color: var(--accent-gold);">${horaTxt} hs</b></td>
+                        <td><b style="font-size: 1.05rem;">${turno.cliente.nombre}</b></td>
+                        <td><a href="https://wa.me/${turno.cliente.telefono}" target="_blank" class="btn-wa">💬 ${turno.cliente.telefono}</a></td>
+                        <td><b>${turno.cliente.vehiculoInfo}</b><br><span style="color: #aaa; font-size: 0.85rem;">🧼 ${turno.servicio.nombre} ($${turno.servicio.precio})</span></td>
+                        <td><span class="badge badge-${turno.estado}">${turno.estado}</span></td>
+                        <td>${botonesAccion}</td>
+                    </tr>
+                `;
+            });
+            return filas;
+        }
+
+        // --- CAMBIAR ESTADO DESDE EL SERVIDOR ---
+        async function cambiarEstado(id, nuevoEstado) {
+            let mensaje = nuevoEstado === 'COMPLETADO' ? "¿Confirmas que el lavado terminó?" : "¿Cancelar turno? El horario volverá a quedar disponible en la web.";
+            if (!confirm(mensaje)) return;
+
+            const claveActual = sessionStorage.getItem("adminKey");
+            try {
+                const respuesta = await fetch(`http://localhost:8080/api/turnos/${id}/estado?nuevoEstado=${nuevoEstado}`, {
+                    method: 'PUT',
+                    headers: { "X-Admin-Key": claveActual }
+                });
+
+                if (respuesta.ok) {
+                    descargarTurnosDelServidor(); // Recarga y mantiene exactamente la vista donde estabas
+                } else {
+                    alert("❌ Acción denegada.");
+                }
+            } catch (error) {
+                alert("⚠️ Error de conexión.");
+            }
+        }
+    </script>
+</body>
+</html>
