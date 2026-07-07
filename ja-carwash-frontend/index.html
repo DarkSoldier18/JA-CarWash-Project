@@ -761,15 +761,18 @@
             const fechaFormateada = `${partesFecha[2]}-${partesFecha[1]}-${partesFecha[0]}`;
             const hora = document.getElementById('hora').value;
             
-            const fechaHoraInicio = `${fechaFormateada}T${hora}-03:00`;
+           // 1. Tomamos tu fecha ya formateada (YYYY-MM-DD) y la hora (HH:mm)
+const fechaHoraInicioRaw = `${fechaFormateada}T${hora}:00`; 
 
-            const datosReserva = {
-                nombreCliente: nombre,
-                telefonoCliente: telefono,
-                vehiculoInfo: vehiculoTexto,
-                servicioId: servicioId,
-                fechaHoraInicio: fechaHoraInicio
-            };
+// 2. ENVIAMOS ESTO. Al quitar el "-03:00", Java lo tomará como 
+// una fecha local (LocalDateTime) que es mucho más fácil de procesar.
+const datosReserva = {
+    nombreCliente: nombre,
+    telefonoCliente: telefono,
+    vehiculoInfo: vehiculoTexto,
+    servicioId: servicioId,
+    fechaHoraInicio: fechaHoraInicioRaw // Quedará: "2026-07-09T10:00:00"
+};
 
             submitBtn.disabled = true;
             submitBtn.innerText = "⏳ Guardando turno...";
@@ -779,9 +782,7 @@
             statusAlert.innerText = "Conectando con el servidor...";
 
             try {
-                console.log("--- CONTENIDO DEL JSON QUE ENVÍO ---");
-console.log(JSON.stringify(datosReserva, null, 2));
-console.log("------------------------------------");
+  
                 const respuesta = await fetch('https://jacarwash-backend.onrender.com/api/turnos', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
