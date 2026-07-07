@@ -6,6 +6,7 @@
     <title>J&A CarWash | Estética & Detalle Vehicular Premium</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="img/logo-carwash.ico">
     <style>
         /* Paleta Sofisticada */
         :root {
@@ -118,6 +119,83 @@
             left: 0;
             color: var(--accent-gold);
         }
+
+          /* --- NUEVA TARJETA DE PRECIOS TIPO TABLA --- */
+        .pricing-card {
+            background-color: var(--card-bg);
+            padding: 3rem 2.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            margin-bottom: 5rem;
+        }
+
+        .pricing-card h2 {
+            font-size: 2rem;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-card p.pricing-subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto; /* Permite scroll horizontal en celulares */
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px; /* Mantiene la estructura limpia en pantallas chicas */
+        }
+
+        th, td {
+            padding: 1.2rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        th {
+            background-color: var(--input-bg);
+            color: var(--accent-gold);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        td {
+            color: var(--text-main);
+            font-size: 1.05rem;
+        }
+
+        /* Alineación especial para la primera columna (Vehículos) */
+        th:first-child, td:first-child {
+            text-align: left;
+            font-weight: 600;
+            background-color: rgba(255, 255, 255, 0.01);
+        }
+
+        /* Destacar la columna del servicio premium más caro */
+        .highlight-col {
+            color: var(--accent-gold);
+            font-weight: 700;
+            background-color: rgba(212, 175, 55, 0.03);
+            border-left: 1px solid rgba(212, 175, 55, 0.1);
+            border-right: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        th.highlight-col {
+            background-color: rgba(212, 175, 55, 0.1);
+        }
+
 
         /* Sección de Reserva */
         .booking-section {
@@ -491,7 +569,37 @@
                 </ul>
             </div>
         </div>
-
+  <div class="pricing-card">
+            <h2>📋 Tarifas de Estética Vehicular</h2>
+            <p class="pricing-subtitle">Elegí el nivel de brillo y protección ideal para tu vehículo.</p>
+            
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Categoría de Vehículo</th>
+                            <th>🚿 Exterior Detalle</th>
+                            <th>🧹 Interior Profundo</th>
+                            <th class="highlight-col">✨ Detalle Integral J&A</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>🚘 Autos Chicos y Medianos</td>
+                            <td>$15.000</td>
+                            <td>$18.000</td>
+                            <td class="highlight-col">$28.000</td>
+                        </tr>
+                        <tr>
+                            <td>🚙 Pick-ups & Camionetas</td>
+                            <td>$20.000</td>
+                            <td>$24.000</td>
+                            <td class="highlight-col">$38.000</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
         <div class="booking-section">
             <h2>Solicitud de Turno Online</h2>
             <p class="tagline">⏱️ Sin esperas eternas: Trabajamos exclusivamente por turno.</p>
