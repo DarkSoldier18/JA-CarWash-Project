@@ -61,14 +61,14 @@ public class TurnoController {
     }
 
    // Ruta 4 PROTEGIDA: Obtener toda la lista de turnos
+   // 1. Dejamos el endpoint de consulta totalmente PÚBLICO para que la Landing Page funcione
     @GetMapping("/turnos")
-    public ResponseEntity<?> obtenerTodosLosTurnos(@RequestHeader(value = "X-Admin-Key", required = false) String token) {
-        // Si no mandan la clave o es incorrecta, rebotamos la petición con error 401
-        if (token == null || !token.equals(CLAVE_ADMIN)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Acceso denegado: Clave incorrecta.");
-        }
+    public ResponseEntity<?> obtenerTodosLosTurnos() {
         return ResponseEntity.ok(turnoService.listarTodosLosTurnos());
     }
+
+    // 2. Si quieres proteger con clave la eliminación, confirmación o edición, lo dejas en esos métodos específicos,
+    // pero la lectura general debe ser libre para que el calendario de los clientes cargue los días ocupados.
 
     // Ruta 5 PROTEGIDA: Cambiar el estado de un turno desde los botones del Admin
     @PutMapping("/turnos/{id}/estado")
