@@ -762,7 +762,7 @@
             const hora = document.getElementById('hora').value;
             
            // 1. Tomamos tu fecha ya formateada (YYYY-MM-DD) y la hora (HH:mm)
-const fechaHoraInicio = `${fechaFormateada}T${hora}:00`
+const fechaHoraInicio = `${fechaFormateada}T${hora}:00-03:00`;
 
 // 2. ENVIAMOS ESTO. Al quitar el "-03:00", Java lo tomará como 
 // una fecha local (LocalDateTime) que es mucho más fácil de procesar.
@@ -771,7 +771,7 @@ const datosReserva = {
     telefonoCliente: telefono,
     vehiculoInfo: vehiculoTexto,
     servicioId: servicioId,
-    fechaHoraInicio: fechaHoraInicioRaw // Quedará: "2026-07-09T10:00:00"
+    fechaHoraInicio: fechaHoraInicio // Quedará: "2026-07-09T10:00:00"
 };
 
             submitBtn.disabled = true;
