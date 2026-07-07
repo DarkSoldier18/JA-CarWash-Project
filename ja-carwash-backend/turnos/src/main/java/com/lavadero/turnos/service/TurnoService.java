@@ -80,7 +80,7 @@ public class TurnoService {
                 "📱 *WhatsApp:* %s\n" +
                 "🚘 *Vehículo:* %s\n" +
                 "🧼 *Servicio:* %s ($%s)\n" +
-                "📅 *Horario:* %s0 hs\n\n" +
+                "📅 *Horario:* %s hs\n\n" +
                 "👉 Revisa el panel administrativo para gestionar la agenda.",
                 cliente.getNombre(),
                 cliente.getTelefono(),

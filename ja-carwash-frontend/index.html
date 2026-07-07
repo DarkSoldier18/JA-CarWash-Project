@@ -779,6 +779,9 @@
             statusAlert.innerText = "Conectando con el servidor...";
 
             try {
+                console.log("--- CONTENIDO DEL JSON QUE ENVÍO ---");
+console.log(JSON.stringify(datosReserva, null, 2));
+console.log("------------------------------------");
                 const respuesta = await fetch('https://jacarwash-backend.onrender.com/api/turnos', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
