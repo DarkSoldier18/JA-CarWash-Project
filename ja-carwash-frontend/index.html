@@ -612,7 +612,7 @@
 
             try {
                 // 2. Le preguntamos a Java qué turnos hay ocupados en esa fecha (Ej: "2026-07-10")
-                const respuesta = await fetch(`http://localhost:8080/api/turnos/fecha/${fechaFormateada}`);
+                const respuesta = await fetch(`http://jacarwash-backend.onrender.com/api/turnos/fecha/${fechaFormateada}`);
                 const turnosOcupados = await respuesta.json();
 
                 // 3. Extraemos solamente las horas de inicio de los turnos ocupados (Ej: "14:00:00")
@@ -779,7 +779,7 @@
             statusAlert.innerText = "Conectando con el servidor...";
 
             try {
-                const respuesta = await fetch('http://localhost:8080/api/turnos', {
+                const respuesta = await fetch('http://jacarwash-backend.onrender.com/api/turnos', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(datosReserva)

@@ -280,7 +280,7 @@
             }
 
             try {
-                const respuesta = await fetch("http://localhost:8080/api/turnos", {
+                const respuesta = await fetch("http://jacarwash-backend.onrender.com/api/turnos", {
                     headers: { "X-Admin-Key": claveActual }
                 });
 
@@ -449,7 +449,7 @@
 
             const claveActual = sessionStorage.getItem("adminKey");
             try {
-                const respuesta = await fetch(`http://localhost:8080/api/turnos/${id}/estado?nuevoEstado=${nuevoEstado}`, {
+                const respuesta = await fetch(`http://jacarwash-backend.onrender.com/api/turnos/${id}/estado?nuevoEstado=${nuevoEstado}`, {
                     method: 'PUT',
                     headers: { "X-Admin-Key": claveActual }
                 });
